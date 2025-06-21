@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solidity Q&A Collection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Animated background particles -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fab fa-ethereum"></i>
+            </div>
+            <h1>Solidity Q&A Collection</h1>
+            <p class="subtitle">Master common Solidity interview questions with our beautifully designed knowledge base</p>
+            
+            <div class="filter-container">
+                <select id="questionNumberFilter" class="filter-select">
+                    <option value="">All Questions</option>
+                </select>
+                <select id="difficultyFilter" class="filter-select">
+                    <option value="">All Difficulties</option>
+                    <option value="Easy">Easy</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Hard">Hard</option>
+                    <option value="Super Hard">Super Hard</option>
+                </select>
+                <select id="topicFilter" class="filter-select">
+                    <option value="">All Topics</option>
+                </select>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="questionCount">100+</div>
+                    <div class="stat-label">Questions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">24/7</div>
+                    <div class="stat-label">Available</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label">Satisfaction</div>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <div class="qa-container" id="qaContainer">
+                <!-- Questions and answers will be dynamically generated here -->
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>© 2025 Solidity Q&A Collection. All rights reserved.</p>
+            <p class="made-with">
+                Made with <i class="fas fa-heart" style="color: #ff4d8d;"></i> for Solidity developers
+            </p>
+        </footer>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+        // Initialize questions and answers
+        function renderQAs(faqs) {
+            const qaContainer = document.getElementById('qaContainer');
+            qaContainer.innerHTML = '';
+
+            faqs.forEach(faq => {
+                const qaItem = document.createElement('div');
+                qaItem.className = 'qa-item';
+                qaItem.innerHTML = `
+                    <p class="question">${faq.question}</p>
+                    <p class="question-meta">Difficulty: ${faq.difficulty} | Topic: ${faq.topic}</p>
+                    <p class="answer">${faq.answer}</p>
+                `;
+                qaContainer.appendChild(qaItem);
+            });
+        }
+
+        // Initialize filters
+        function initializeFilters() {
+            const questionNumberFilter = document.getElementById('questionNumberFilter');
+            const topicFilter = document.getElementById('topicFilter');
+            const uniqueTopics = [...new Set(faqData.map(faq => faq.topic))];
+
+            faqData.forEach(faq => {
+                const option = document.createElement('option');
+                option.value = faq.id;
+                option.textContent = `Question ${faq.id}`;
+                questionNumberFilter.appendChild(option);
+            });
+
+            uniqueTopics.forEach(topic => {
+                const option = document.createElement('option');
+                option.value = topic;
+                option.textContent = topic;
+                topicFilter.appendChild(option);
+            });
+        }
+
+        // Filter questions and answers
+        function filterQAs() {
+            const questionNumber = document.getElementById('questionNumberFilter').value;
+            const difficulty = document.getElementById('difficultyFilter').value;
+            const topic = document.getElementById('topicFilter').value;
+
+            let filteredFaqs = faqData;
+
+            if (questionNumber) {
+                filteredFaqs = filteredFaqs.filter(faq => faq.id.toString() === questionNumber);
+            }
+            if (difficulty) {
+                filteredFaqs = filteredFaqs.filter(faq => faq.difficulty === difficulty);
+            }
+            if (topic) {
+                filteredFaqs = filteredFaqs.filter(faq => faq.topic === topic);
+            }
+
+            renderQAs(filteredFaqs);
+        }
+
+        // Create animated background particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = window.innerWidth <= 480 ? 15 : 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                const size = Math.random() * 15 + 5;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const animationDuration = Math.random() * 10 + 10;
+                const animationDelay = Math.random() * 5;
+                const hue = Math.floor(Math.random() * 360);
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                particle.style.animationDuration = `${animationDuration}s`;
+                particle.style.animationDelay = `${animationDelay}s`;
+                particle.style.backgroundColor = `hsla(${hue}, 70%, 60%, 0.2)`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sort FAQs by difficulty
+            const difficultyOrder = { Easy: 1, Medium: 2, Hard: 3, "Super Hard": 4 };
+            faqData.sort((a, b) => difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty]);
+
+            renderQAs(faqData);
+            initializeFilters();
+            createParticles();
+
+            // Add filter event listeners
+            ['questionNumberFilter', 'difficultyFilter', 'topicFilter'].forEach(id => {
+                document.getElementById(id).addEventListener('change', filterQAs);
+            });
+
+            // Update question count
+            document.getElementById('questionCount').textContent = `${faqData.length}+`;
+        });
+    </script>
+</body>
+</html>
